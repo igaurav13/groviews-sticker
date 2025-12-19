@@ -5,7 +5,7 @@ export default function DesignPage() {
   return (
     <div className="h-screen flex">
       {/* Left Panel */}
-      <div className="w-64 border-r p-4 space-y-4">
+      <div className="w-64 border-r bg-red-400 p-4 space-y-4">
         <h2 className="font-semibold">Tools</h2>
         <ImageUpload />
       </div>
