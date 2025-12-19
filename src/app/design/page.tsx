@@ -1,6 +1,8 @@
 import ImageUpload from "@/components/tools/ImageUpload";
 import StickerCanvas from "@/components/canvas/StickerCanvas";
 import TextTool from "@/components/tools/TextTool";
+import TextProperties from "@/components/properties/TextProperties";
+
 
 export default function DesignPage() {
   return (
@@ -19,7 +21,8 @@ export default function DesignPage() {
 
       {/* Right Panel */}
       <div className="w-64 border-l p-4">
-        <h2 className="font-semibold">Properties</h2>
+        <h2 className="font-semibold mb-4">Properties</h2>
+            <TextProperties />
       </div>
     </div>
   );
