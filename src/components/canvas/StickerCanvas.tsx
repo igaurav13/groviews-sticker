@@ -1,6 +1,14 @@
 "use client";
 
-import { Stage, Layer, Group, Circle, Image as KonvaImage, Transformer } from "react-konva";
+import {
+  Stage,
+  Layer,
+  Group,
+  Circle,
+  Image as KonvaImage,
+  Transformer,
+  Text as KonvaText,
+} from "react-konva";
 import { useCanvasStore } from "@/store/canvasStore";
 import useImage from "use-image";
 import { useRef, useEffect } from "react";
@@ -8,9 +16,12 @@ import { useRef, useEffect } from "react";
 const CANVAS_SIZE = 400;
 const RADIUS = 180;
 
+/* ================= IMAGE ELEMENT ================= */
+
 function CanvasImage({ element }: { element: any }) {
   const [image] = useImage(element.src);
   const setSelectedId = useCanvasStore((s) => s.setSelectedId);
+  const updateElement = useCanvasStore((s) => s.updateElement);
   const selectedId = useCanvasStore((s) => s.selectedId);
 
   return (
@@ -19,21 +30,92 @@ function CanvasImage({ element }: { element: any }) {
       image={image}
       x={element.x}
       y={element.y}
+      rotation={element.rotation}
+      scaleX={element.scale}
+      scaleY={element.scale}
       draggable
       onClick={() => setSelectedId(element.id)}
       onTap={() => setSelectedId(element.id)}
+      onDragEnd={(e) => {
+        updateElement(element.id, {
+          x: e.target.x(),
+          y: e.target.y(),
+        });
+      }}
+      onTransformEnd={(e) => {
+        const node = e.target;
+        const scaleX = node.scaleX();
+
+        node.scaleX(1);
+        node.scaleY(1);
+
+        updateElement(element.id, {
+          x: node.x(),
+          y: node.y(),
+          rotation: node.rotation(),
+          scale: scaleX,
+        });
+      }}
       stroke={selectedId === element.id ? "#2563eb" : undefined}
       strokeWidth={selectedId === element.id ? 2 : 0}
     />
   );
 }
 
+/* ================= TEXT ELEMENT ================= */
+
+function CanvasText({ element }: { element: any }) {
+  const setSelectedId = useCanvasStore((s) => s.setSelectedId);
+  const updateElement = useCanvasStore((s) => s.updateElement);
+  const selectedId = useCanvasStore((s) => s.selectedId);
+
+  return (
+    <KonvaText
+      id={element.id}
+      text={element.text}
+      x={element.x}
+      y={element.y}
+      rotation={element.rotation}
+      fontSize={element.fontSize}
+      fill={element.color}
+      scaleX={element.scale}
+      scaleY={element.scale}
+      draggable
+      onClick={() => setSelectedId(element.id)}
+      onTap={() => setSelectedId(element.id)}
+      onDragEnd={(e) => {
+        updateElement(element.id, {
+          x: e.target.x(),
+          y: e.target.y(),
+        });
+      }}
+      onTransformEnd={(e) => {
+        const node = e.target;
+        const scaleX = node.scaleX();
+
+        node.scaleX(1);
+        node.scaleY(1);
+
+        updateElement(element.id, {
+          x: node.x(),
+          y: node.y(),
+          rotation: node.rotation(),
+          scale: scaleX,
+        });
+      }}
+      stroke={selectedId === element.id ? "#2563eb" : undefined}
+      strokeWidth={selectedId === element.id ? 1 : 0}
+    />
+  );
+}
+
+/* ================= MAIN CANVAS ================= */
+
 export default function StickerCanvas() {
-  const elements = useCanvasStore((state) => state.elements);
-  const selectedId = useCanvasStore((state) => state.selectedId);
+  const elements = useCanvasStore((s) => s.elements);
+  const selectedId = useCanvasStore((s) => s.selectedId);
 
   const trRef = useRef<any>(null);
-  const layerRef = useRef<any>(null);
 
   useEffect(() => {
     if (!selectedId || !trRef.current) return;
@@ -49,7 +131,8 @@ export default function StickerCanvas() {
 
   return (
     <Stage width={CANVAS_SIZE} height={CANVAS_SIZE}>
-      <Layer ref={layerRef}>
+      <Layer>
+        {/* CLIPPED STICKER AREA */}
         <Group
           clipFunc={(ctx) => {
             ctx.beginPath();
@@ -71,15 +154,19 @@ export default function StickerCanvas() {
             fill="#ffffff"
           />
 
-          {/* Render images */}
-          {elements.map((el) =>
-            el.type === "image" ? (
-              <CanvasImage key={el.id} element={el} />
-            ) : null
-          )}
+          {/* IMAGE + TEXT RENDERING */}
+          {elements.map((el) => {
+            if (el.type === "image") {
+              return <CanvasImage key={el.id} element={el} />;
+            }
+            if (el.type === "text") {
+              return <CanvasText key={el.id} element={el} />;
+            }
+            return null;
+          })}
         </Group>
 
-        {/* Transformer */}
+        {/* TRANSFORMER (OUTSIDE CLIP) */}
         {selectedId && (
           <Transformer
             ref={trRef}

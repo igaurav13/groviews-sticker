@@ -1,5 +1,6 @@
 import ImageUpload from "@/components/tools/ImageUpload";
 import StickerCanvas from "@/components/canvas/StickerCanvas";
+import TextTool from "@/components/tools/TextTool";
 
 export default function DesignPage() {
   return (
@@ -8,6 +9,7 @@ export default function DesignPage() {
       <div className="w-64 border-r bg-red-400 p-4 space-y-4">
         <h2 className="font-semibold">Tools</h2>
         <ImageUpload />
+          <TextTool />
       </div>
 
       {/* Canvas Area */}

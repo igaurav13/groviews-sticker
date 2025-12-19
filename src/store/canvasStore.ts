@@ -8,10 +8,10 @@ export type CanvasElement = {
   rotation: number;
   scale: number;
 
-  // image-specific
+  // image
   src?: string;
 
-  // text-specific
+  // text
   text?: string;
   color?: string;
   fontSize?: number;
@@ -22,6 +22,7 @@ type CanvasState = {
   selectedId: string | null;
 
   addElement: (el: CanvasElement) => void;
+  updateElement: (id: string, attrs: Partial<CanvasElement>) => void;
   setSelectedId: (id: string | null) => void;
 };
 
@@ -32,6 +33,13 @@ export const useCanvasStore = create<CanvasState>((set) => ({
   addElement: (el) =>
     set((state) => ({
       elements: [...state.elements, el],
+    })),
+
+  updateElement: (id, attrs) =>
+    set((state) => ({
+      elements: state.elements.map((el) =>
+        el.id === id ? { ...el, ...attrs } : el
+      ),
     })),
 
   setSelectedId: (id) => set({ selectedId: id }),
