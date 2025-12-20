@@ -105,6 +105,8 @@ function CanvasText({ element }: { element: any }) {
   );
 }
 
+
+
 /* ---------- MAIN ---------- */
 export default function StickerCanvas() {
   const elements = useCanvasStore((s) => s.present.elements);
@@ -122,6 +124,12 @@ export default function StickerCanvas() {
       trRef.current.getLayer()?.batchDraw();
     }
   }, [selectedId]);
+
+  /* ---------- BACKGROUND COLOR ---------- */
+const backgroundColor = useCanvasStore(
+  (s) => s.present.backgroundColor
+);
+
 
   return (
     <div
@@ -151,7 +159,7 @@ export default function StickerCanvas() {
               x={CANVAS_SIZE / 2}
               y={CANVAS_SIZE / 2}
               radius={RADIUS}
-              fill="#ffffff"
+              fill={backgroundColor}
             />
 
             {elements.map((el) =>

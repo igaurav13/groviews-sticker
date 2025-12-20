@@ -9,6 +9,7 @@ import ExportButton from "@/components/tools/ExportButton";
 import ImageUpload from "@/components/tools/ImageUpload";
 import ZoomControls from "@/components/tools/ZoomControls";
 import LayerControls from "@/components/tools/LayerControls";
+import BackgroundColorPicker from "@/components/tools/BackgroundColorPicker";
 
 export default function DesignPage() {
   const stageRef = useRef<any>(null);
@@ -21,6 +22,7 @@ export default function DesignPage() {
 
         <HistoryControls />
         <ZoomControls />
+        <BackgroundColorPicker />
         <LayerControls />
         <ImageUpload />
         <TextTool />
