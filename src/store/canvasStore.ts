@@ -17,7 +17,6 @@ export type CanvasElement = {
   fontSize?: number;
 };
 
-
 export type CanvasSnapshot = {
   elements: CanvasElement[];
   selectedId: string | null;
@@ -26,10 +25,15 @@ export type CanvasSnapshot = {
 };
 
 type CanvasState = {
+  /* Undoable state */
   past: CanvasSnapshot[];
   present: CanvasSnapshot;
   future: CanvasSnapshot[];
 
+  /* UI-only state */
+  showGrid: boolean;
+
+  /* Actions */
   addElement: (el: CanvasElement) => void;
   updateElement: (id: string, attrs: Partial<CanvasElement>) => void;
   setSelectedId: (id: string | null) => void;
@@ -41,11 +45,12 @@ type CanvasState = {
 
   undo: () => void;
   redo: () => void;
-  loadDraft: () => void;
 
   setScale: (scale: number) => void;
   zoomIn: () => void;
   zoomOut: () => void;
+
+  toggleGrid: () => void;
 
   loadTemplate: (template: CanvasSnapshot) => void;
 };
@@ -66,7 +71,10 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
   },
   future: [],
 
+  showGrid: true,
+
   /* ---------- ELEMENTS ---------- */
+
   addElement: (el) => {
     const { past, present } = get();
     const next = {
@@ -97,6 +105,7 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
   },
 
   /* ---------- LAYERS ---------- */
+
   bringForward: (id) => {
     const { past, present } = get();
     const idx = present.elements.findIndex((e) => e.id === id);
@@ -124,6 +133,7 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
   },
 
   /* ---------- BACKGROUND ---------- */
+
   setBackgroundColor: (color) => {
     const { past, present } = get();
     const next = { ...present, backgroundColor: color };
@@ -131,11 +141,11 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
     set({ past: [...past, present], present: next, future: [] });
   },
 
-  /* ---------- HISTORY ---------- */
+  /* ---------- UNDO / REDO ---------- */
+
   undo: () => {
     const { past, present, future } = get();
     if (!past.length) return;
-
     const prev = past[past.length - 1];
     save(prev);
     set({
@@ -148,7 +158,6 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
   redo: () => {
     const { past, present, future } = get();
     if (!future.length) return;
-
     const next = future[0];
     save(next);
     set({
@@ -158,14 +167,8 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
     });
   },
 
-  /* ---------- DRAFT ---------- */
-  loadDraft: () => {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return;
-    set({ past: [], present: JSON.parse(raw), future: [] });
-  },
-
   /* ---------- ZOOM ---------- */
+
   setScale: (scale) => {
     const { past, present } = get();
     const clamped = Math.min(2.5, Math.max(0.5, scale));
@@ -177,12 +180,16 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
   zoomIn: () => get().setScale(get().present.scale + 0.1),
   zoomOut: () => get().setScale(get().present.scale - 0.1),
 
-  /* ---------- TEMPLATES ---------- */
+  /* ---------- GRID ---------- */
+
+  toggleGrid: () => set((s) => ({ showGrid: !s.showGrid })),
+
+  /* ---------- TEMPLATE ---------- */
+
   loadTemplate: (template) => {
-    const { past, present } = get();
     save(template);
     set({
-      past: [...past, present],
+      past: [],
       present: template,
       future: [],
     });

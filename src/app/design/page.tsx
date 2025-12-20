@@ -11,6 +11,7 @@ import ZoomControls from "@/components/tools/ZoomControls";
 import LayerControls from "@/components/tools/LayerControls";
 import BackgroundColorPicker from "@/components/tools/BackgroundColorPicker";
 import TemplatePicker from "@/components/tools/TemplatePicker";
+import GridToggle from "@/components/tools/GridToggle";
 
 export default function DesignPage() {
   const stageRef = useRef<any>(null);
@@ -27,6 +28,7 @@ export default function DesignPage() {
         <BackgroundColorPicker />
         <LayerControls />
         <ImageUpload />
+        <GridToggle />
         <TextTool />
         <ExportButton stageRef={stageRef} />
       </div>
