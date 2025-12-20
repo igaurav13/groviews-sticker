@@ -36,11 +36,14 @@ function CanvasImage({ element }: { element: any }) {
       onClick={() => setSelectedId(element.id)}
       onTap={() => setSelectedId(element.id)}
       onDragEnd={(e) =>
-        updateElement(element.id, { x: e.target.x(), y: e.target.y() })
+        updateElement(element.id, {
+          x: e.target.x(),
+          y: e.target.y(),
+        })
       }
       onTransformEnd={(e) => {
         const node = e.target;
-        const scale = node.scaleX();
+        const scaleX = node.scaleX();
         node.scaleX(1);
         node.scaleY(1);
 
@@ -48,7 +51,7 @@ function CanvasImage({ element }: { element: any }) {
           x: node.x(),
           y: node.y(),
           rotation: node.rotation(),
-          scale,
+          scale: scaleX,
         });
       }}
       stroke={selectedId === element.id ? "#2563eb" : undefined}
@@ -78,11 +81,14 @@ function CanvasText({ element }: { element: any }) {
       onClick={() => setSelectedId(element.id)}
       onTap={() => setSelectedId(element.id)}
       onDragEnd={(e) =>
-        updateElement(element.id, { x: e.target.x(), y: e.target.y() })
+        updateElement(element.id, {
+          x: e.target.x(),
+          y: e.target.y(),
+        })
       }
       onTransformEnd={(e) => {
         const node = e.target;
-        const scale = node.scaleX();
+        const scaleX = node.scaleX();
         node.scaleX(1);
         node.scaleY(1);
 
@@ -90,7 +96,7 @@ function CanvasText({ element }: { element: any }) {
           x: node.x(),
           y: node.y(),
           rotation: node.rotation(),
-          scale,
+          scale: scaleX,
         });
       }}
       stroke={selectedId === element.id ? "#2563eb" : undefined}
@@ -109,10 +115,8 @@ export default function StickerCanvas() {
 
   useEffect(() => {
     if (!selectedId || !trRef.current) return;
-
     const stage = trRef.current.getStage();
     const node = stage?.findOne(`#${selectedId}`);
-
     if (node) {
       trRef.current.nodes([node]);
       trRef.current.getLayer()?.batchDraw();
@@ -120,57 +124,59 @@ export default function StickerCanvas() {
   }, [selectedId]);
 
   return (
-    <Stage
-      width={CANVAS_SIZE}
-      height={CANVAS_SIZE}
-      scaleX={scale}
-      scaleY={scale}
-      x={(CANVAS_SIZE * (1 - scale)) / 2}
-      y={(CANVAS_SIZE * (1 - scale)) / 2}
+    <div
+      style={{
+        width: CANVAS_SIZE,
+        height: CANVAS_SIZE,
+        transform: `scale(${scale})`,
+        transformOrigin: "center",
+      }}
     >
-      <Layer>
-        <Group
-          clipFunc={(ctx) => {
-            ctx.beginPath();
-            ctx.arc(
-              CANVAS_SIZE / 2,
-              CANVAS_SIZE / 2,
-              RADIUS,
-              0,
-              Math.PI * 2
-            );
-            ctx.closePath();
-          }}
-        >
-          <Circle
-            x={CANVAS_SIZE / 2}
-            y={CANVAS_SIZE / 2}
-            radius={RADIUS}
-            fill="#ffffff"
-          />
+      <Stage width={CANVAS_SIZE} height={CANVAS_SIZE}>
+        <Layer>
+          <Group
+            clipFunc={(ctx) => {
+              ctx.beginPath();
+              ctx.arc(
+                CANVAS_SIZE / 2,
+                CANVAS_SIZE / 2,
+                RADIUS,
+                0,
+                Math.PI * 2
+              );
+              ctx.closePath();
+            }}
+          >
+            <Circle
+              x={CANVAS_SIZE / 2}
+              y={CANVAS_SIZE / 2}
+              radius={RADIUS}
+              fill="#ffffff"
+            />
 
-          {elements.map((el) =>
-            el.type === "image" ? (
-              <CanvasImage key={el.id} element={el} />
-            ) : (
-              <CanvasText key={el.id} element={el} />
-            )
+            {elements.map((el) =>
+              el.type === "image" ? (
+                <CanvasImage key={el.id} element={el} />
+              ) : (
+                <CanvasText key={el.id} element={el} />
+              )
+            )}
+          </Group>
+
+          {selectedId && (
+            <Transformer
+              ref={trRef}
+              rotateEnabled
+              enabledAnchors={[
+                "top-left",
+                "top-right",
+                "bottom-left",
+                "bottom-right",
+              ]}
+            />
           )}
-        </Group>
-
-        {selectedId && (
-          <Transformer
-            ref={trRef}
-            rotateEnabled
-            enabledAnchors={[
-              "top-left",
-              "top-right",
-              "bottom-left",
-              "bottom-right",
-            ]}
-          />
-        )}
-      </Layer>
-    </Stage>
+        </Layer>
+      </Stage>
+    </div>
   );
 }

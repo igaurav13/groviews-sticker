@@ -9,23 +9,23 @@ export default function ZoomControls() {
 
   return (
     <div className="space-y-2">
-      <p className="text-sm font-medium">Zoom</p>
+      <h3 className="text-sm font-medium">Zoom</h3>
 
       <div className="flex items-center gap-2">
         <button
           onClick={zoomOut}
-          className="px-2 py-1 border rounded"
+          className="px-3 py-1 border rounded text-sm"
         >
           −
         </button>
 
-        <span className="text-sm w-12 text-center">
+        <span className="text-sm w-14 text-center">
           {Math.round(scale * 100)}%
         </span>
 
         <button
           onClick={zoomIn}
-          className="px-2 py-1 border rounded"
+          className="px-3 py-1 border rounded text-sm"
         >
           +
         </button>
