@@ -20,6 +20,7 @@ export type CanvasElement = {
 type CanvasSnapshot = {
   elements: CanvasElement[];
   selectedId: string | null;
+  scale: number; // ✅ canvas zoom
 };
 
 type CanvasState = {
@@ -37,15 +38,19 @@ type CanvasState = {
   undo: () => void;
   redo: () => void;
   loadDraft: () => void;
+
+  setScale: (scale: number) => void;
+  zoomIn: () => void;
+  zoomOut: () => void;
 };
 
 /* =======================
-   LOCAL STORAGE HELPER
+   LOCAL STORAGE
 ======================= */
 
 const STORAGE_KEY = "sticker-draft-v1";
 
-const saveToLocalStorage = (present: CanvasSnapshot) => {
+const save = (present: CanvasSnapshot) => {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(present));
 };
 
@@ -58,43 +63,45 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
   present: {
     elements: [],
     selectedId: null,
+    scale: 1, // ✅ IMPORTANT DEFAULT
   },
   future: [],
 
-  /* ---------- ADD ELEMENT ---------- */
+  /* ---------- ADD ---------- */
   addElement: (el) => {
     const { past, present } = get();
 
-    const nextPresent: CanvasSnapshot = {
+    const next: CanvasSnapshot = {
+      ...present,
       elements: [...present.elements, el],
       selectedId: el.id,
     };
 
-    saveToLocalStorage(nextPresent);
+    save(next);
 
     set({
       past: [...past, present],
-      present: nextPresent,
+      present: next,
       future: [],
     });
   },
 
-  /* ---------- UPDATE ELEMENT ---------- */
+  /* ---------- UPDATE ---------- */
   updateElement: (id, attrs) => {
     const { past, present } = get();
 
-    const nextPresent: CanvasSnapshot = {
+    const next: CanvasSnapshot = {
       ...present,
       elements: present.elements.map((el) =>
         el.id === id ? { ...el, ...attrs } : el
       ),
     };
 
-    saveToLocalStorage(nextPresent);
+    save(next);
 
     set({
       past: [...past, present],
-      present: nextPresent,
+      present: next,
       future: [],
     });
   },
@@ -102,106 +109,104 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
   /* ---------- SELECTION ---------- */
   setSelectedId: (id) => {
     const { present } = get();
-
-    const nextPresent = { ...present, selectedId: id };
-    saveToLocalStorage(nextPresent);
-
-    set({ present: nextPresent });
+    const next = { ...present, selectedId: id };
+    save(next);
+    set({ present: next });
   },
 
-  /* ---------- LAYER ORDER ---------- */
+  /* ---------- LAYERS ---------- */
   bringForward: (id) => {
     const { past, present } = get();
-    const index = present.elements.findIndex((el) => el.id === id);
+    const idx = present.elements.findIndex((e) => e.id === id);
+    if (idx < 0 || idx === present.elements.length - 1) return;
 
-    if (index === -1 || index === present.elements.length - 1) return;
+    const els = [...present.elements];
+    [els[idx], els[idx + 1]] = [els[idx + 1], els[idx]];
 
-    const newElements = [...present.elements];
-    [newElements[index], newElements[index + 1]] = [
-      newElements[index + 1],
-      newElements[index],
-    ];
+    const next = { ...present, elements: els };
+    save(next);
 
-    const nextPresent = { ...present, elements: newElements };
-    saveToLocalStorage(nextPresent);
-
-    set({
-      past: [...past, present],
-      present: nextPresent,
-      future: [],
-    });
+    set({ past: [...past, present], present: next, future: [] });
   },
 
   sendBackward: (id) => {
     const { past, present } = get();
-    const index = present.elements.findIndex((el) => el.id === id);
+    const idx = present.elements.findIndex((e) => e.id === id);
+    if (idx <= 0) return;
 
-    if (index <= 0) return;
+    const els = [...present.elements];
+    [els[idx], els[idx - 1]] = [els[idx - 1], els[idx]];
 
-    const newElements = [...present.elements];
-    [newElements[index], newElements[index - 1]] = [
-      newElements[index - 1],
-      newElements[index],
-    ];
+    const next = { ...present, elements: els };
+    save(next);
 
-    const nextPresent = { ...present, elements: newElements };
-    saveToLocalStorage(nextPresent);
-
-    set({
-      past: [...past, present],
-      present: nextPresent,
-      future: [],
-    });
+    set({ past: [...past, present], present: next, future: [] });
   },
 
-  /* ---------- UNDO / REDO ---------- */
+  /* ---------- HISTORY ---------- */
   undo: () => {
     const { past, present, future } = get();
-    if (past.length === 0) return;
+    if (!past.length) return;
 
-    const previous = past[past.length - 1];
-    const newPast = past.slice(0, past.length - 1);
-
-    saveToLocalStorage(previous);
+    const prev = past[past.length - 1];
+    save(prev);
 
     set({
-      past: newPast,
-      present: previous,
+      past: past.slice(0, -1),
+      present: prev,
       future: [present, ...future],
     });
   },
 
   redo: () => {
     const { past, present, future } = get();
-    if (future.length === 0) return;
+    if (!future.length) return;
 
     const next = future[0];
-    const newFuture = future.slice(1);
-
-    saveToLocalStorage(next);
+    save(next);
 
     set({
       past: [...past, present],
       present: next,
-      future: newFuture,
+      future: future.slice(1),
     });
   },
 
-  /* ---------- LOAD DRAFT ---------- */
+  /* ---------- LOAD ---------- */
   loadDraft: () => {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return;
 
     try {
       const data = JSON.parse(raw) as CanvasSnapshot;
-
-      set({
-        past: [],
-        present: data,
-        future: [],
-      });
-    } catch (err) {
-      console.error("Failed to load canvas draft", err);
+      set({ past: [], present: data, future: [] });
+    } catch {
+      console.error("Invalid draft data");
     }
+  },
+
+  /* ---------- ZOOM ---------- */
+  setScale: (scale) => {
+    const { past, present } = get();
+    const clamped = Math.min(2.5, Math.max(0.5, scale));
+
+    const next = { ...present, scale: clamped };
+    save(next);
+
+    set({
+      past: [...past, present],
+      present: next,
+      future: [],
+    });
+  },
+
+  zoomIn: () => {
+    const { present, setScale } = get();
+    setScale(present.scale + 0.1);
+  },
+
+  zoomOut: () => {
+    const { present, setScale } = get();
+    setScale(present.scale - 0.1);
   },
 }));

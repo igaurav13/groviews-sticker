@@ -16,8 +16,7 @@ import { useRef, useEffect } from "react";
 const CANVAS_SIZE = 400;
 const RADIUS = 180;
 
-/* ---------------- IMAGE ELEMENT ---------------- */
-
+/* ---------- IMAGE ---------- */
 function CanvasImage({ element }: { element: any }) {
   const [image] = useImage(element.src);
   const setSelectedId = useCanvasStore((s) => s.setSelectedId);
@@ -36,16 +35,12 @@ function CanvasImage({ element }: { element: any }) {
       draggable
       onClick={() => setSelectedId(element.id)}
       onTap={() => setSelectedId(element.id)}
-      onDragEnd={(e) => {
-        updateElement(element.id, {
-          x: e.target.x(),
-          y: e.target.y(),
-        });
-      }}
+      onDragEnd={(e) =>
+        updateElement(element.id, { x: e.target.x(), y: e.target.y() })
+      }
       onTransformEnd={(e) => {
         const node = e.target;
-        const scaleX = node.scaleX();
-
+        const scale = node.scaleX();
         node.scaleX(1);
         node.scaleY(1);
 
@@ -53,7 +48,7 @@ function CanvasImage({ element }: { element: any }) {
           x: node.x(),
           y: node.y(),
           rotation: node.rotation(),
-          scale: scaleX,
+          scale,
         });
       }}
       stroke={selectedId === element.id ? "#2563eb" : undefined}
@@ -62,8 +57,7 @@ function CanvasImage({ element }: { element: any }) {
   );
 }
 
-/* ---------------- TEXT ELEMENT ---------------- */
-
+/* ---------- TEXT ---------- */
 function CanvasText({ element }: { element: any }) {
   const setSelectedId = useCanvasStore((s) => s.setSelectedId);
   const updateElement = useCanvasStore((s) => s.updateElement);
@@ -83,16 +77,12 @@ function CanvasText({ element }: { element: any }) {
       draggable
       onClick={() => setSelectedId(element.id)}
       onTap={() => setSelectedId(element.id)}
-      onDragEnd={(e) => {
-        updateElement(element.id, {
-          x: e.target.x(),
-          y: e.target.y(),
-        });
-      }}
+      onDragEnd={(e) =>
+        updateElement(element.id, { x: e.target.x(), y: e.target.y() })
+      }
       onTransformEnd={(e) => {
         const node = e.target;
-        const scaleX = node.scaleX();
-
+        const scale = node.scaleX();
         node.scaleX(1);
         node.scaleY(1);
 
@@ -100,7 +90,7 @@ function CanvasText({ element }: { element: any }) {
           x: node.x(),
           y: node.y(),
           rotation: node.rotation(),
-          scale: scaleX,
+          scale,
         });
       }}
       stroke={selectedId === element.id ? "#2563eb" : undefined}
@@ -109,15 +99,11 @@ function CanvasText({ element }: { element: any }) {
   );
 }
 
-/* ---------------- MAIN CANVAS ---------------- */
-
-export default function StickerCanvas({
-  stageRef,
-}: {
-  stageRef: React.RefObject<any>;
-}) {
+/* ---------- MAIN ---------- */
+export default function StickerCanvas() {
   const elements = useCanvasStore((s) => s.present.elements);
   const selectedId = useCanvasStore((s) => s.present.selectedId);
+  const scale = useCanvasStore((s) => s.present.scale);
 
   const trRef = useRef<any>(null);
 
@@ -125,22 +111,24 @@ export default function StickerCanvas({
     if (!selectedId || !trRef.current) return;
 
     const stage = trRef.current.getStage();
-    const selectedNode = stage?.findOne(`#${selectedId}`);
+    const node = stage?.findOne(`#${selectedId}`);
 
-    if (selectedNode) {
-      trRef.current.nodes([selectedNode]);
+    if (node) {
+      trRef.current.nodes([node]);
       trRef.current.getLayer()?.batchDraw();
     }
   }, [selectedId]);
 
   return (
     <Stage
-      ref={stageRef}
       width={CANVAS_SIZE}
       height={CANVAS_SIZE}
+      scaleX={scale}
+      scaleY={scale}
+      x={(CANVAS_SIZE * (1 - scale)) / 2}
+      y={(CANVAS_SIZE * (1 - scale)) / 2}
     >
       <Layer>
-        {/* CLIPPED STICKER AREA */}
         <Group
           clipFunc={(ctx) => {
             ctx.beginPath();
@@ -154,7 +142,6 @@ export default function StickerCanvas({
             ctx.closePath();
           }}
         >
-          {/* STICKER BACKGROUND */}
           <Circle
             x={CANVAS_SIZE / 2}
             y={CANVAS_SIZE / 2}
@@ -162,19 +149,15 @@ export default function StickerCanvas({
             fill="#ffffff"
           />
 
-          {/* ELEMENTS */}
-          {elements.map((el) => {
-            if (el.type === "image") {
-              return <CanvasImage key={el.id} element={el} />;
-            }
-            if (el.type === "text") {
-              return <CanvasText key={el.id} element={el} />;
-            }
-            return null;
-          })}
+          {elements.map((el) =>
+            el.type === "image" ? (
+              <CanvasImage key={el.id} element={el} />
+            ) : (
+              <CanvasText key={el.id} element={el} />
+            )
+          )}
         </Group>
 
-        {/* TRANSFORMER (OUTSIDE CLIP) */}
         {selectedId && (
           <Transformer
             ref={trRef}

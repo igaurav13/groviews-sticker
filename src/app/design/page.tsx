@@ -23,7 +23,7 @@ export default function DesignPage() {
 
       {/* Canvas */}
       <div className="flex-1 flex items-center justify-center bg-gray-100">
-        <StickerCanvas stageRef={stageRef} />
+        <StickerCanvas />
       </div>
 
       {/* Right Panel */}
