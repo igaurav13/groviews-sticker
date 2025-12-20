@@ -1,11 +1,12 @@
 'use client';
+
 import { useRef } from "react";
-import ImageUpload from "@/components/tools/ImageUpload";
 import StickerCanvas from "@/components/canvas/StickerCanvas";
 import TextTool from "@/components/tools/TextTool";
 import TextProperties from "@/components/properties/TextProperties";
 import HistoryControls from "@/components/tools/HistoryControls";
 import ExportButton from "@/components/tools/ExportButton";
+import ImageUpload from "@/components/tools/ImageUpload";
 
 export default function DesignPage() {
   const stageRef = useRef<any>(null);
@@ -15,6 +16,7 @@ export default function DesignPage() {
       {/* Left Panel */}
       <div className="w-64 border-r p-4 space-y-4">
         <h2 className="font-semibold">Tools</h2>
+
         <HistoryControls />
         <ImageUpload />
         <TextTool />
