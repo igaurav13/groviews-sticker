@@ -8,6 +8,7 @@ import HistoryControls from "@/components/tools/HistoryControls";
 import ExportButton from "@/components/tools/ExportButton";
 import ImageUpload from "@/components/tools/ImageUpload";
 import ZoomControls from "@/components/tools/ZoomControls";
+import LayerControls from "@/components/tools/LayerControls";
 
 export default function DesignPage() {
   const stageRef = useRef<any>(null);
@@ -17,8 +18,10 @@ export default function DesignPage() {
       {/* Left Panel */}
       <div className="w-64 border-r p-4 space-y-4">
         <h2 className="font-semibold">Tools</h2>
+
         <HistoryControls />
         <ZoomControls />
+        <LayerControls />
         <ImageUpload />
         <TextTool />
         <ExportButton stageRef={stageRef} />

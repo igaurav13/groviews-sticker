@@ -9,23 +9,26 @@ export default function LayerControls() {
 
   if (!selectedId) {
     return (
-      <p className="text-xs text-gray-500">
+      <p className="text-sm text-gray-500">
         Select an element to manage layers
       </p>
     );
   }
 
   return (
-    <div className="space-y-1">
+    <div className="space-y-2">
+      <h3 className="text-sm font-medium">Layers</h3>
+
       <button
         onClick={() => bringForward(selectedId)}
-        className="w-full rounded border px-2 py-1 text-sm"
+        className="w-full px-3 py-1 border rounded text-sm"
       >
         Bring Forward
       </button>
+
       <button
         onClick={() => sendBackward(selectedId)}
-        className="w-full rounded border px-2 py-1 text-sm"
+        className="w-full px-3 py-1 border rounded text-sm"
       >
         Send Backward
       </button>
