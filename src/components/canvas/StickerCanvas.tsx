@@ -16,13 +16,13 @@ import { useRef, useEffect } from "react";
 const CANVAS_SIZE = 400;
 const RADIUS = 180;
 
-/* ================= IMAGE ELEMENT ================= */
+/* ---------------- IMAGE ELEMENT ---------------- */
 
 function CanvasImage({ element }: { element: any }) {
   const [image] = useImage(element.src);
   const setSelectedId = useCanvasStore((s) => s.setSelectedId);
+  const selectedId = useCanvasStore((s) => s.present.selectedId);
   const updateElement = useCanvasStore((s) => s.updateElement);
-  const selectedId = useCanvasStore((s) => s.selectedId);
 
   return (
     <KonvaImage
@@ -62,12 +62,12 @@ function CanvasImage({ element }: { element: any }) {
   );
 }
 
-/* ================= TEXT ELEMENT ================= */
+/* ---------------- TEXT ELEMENT ---------------- */
 
 function CanvasText({ element }: { element: any }) {
   const setSelectedId = useCanvasStore((s) => s.setSelectedId);
   const updateElement = useCanvasStore((s) => s.updateElement);
-  const selectedId = useCanvasStore((s) => s.selectedId);
+  const selectedId = useCanvasStore((s) => s.present.selectedId);
 
   return (
     <KonvaText
@@ -109,11 +109,15 @@ function CanvasText({ element }: { element: any }) {
   );
 }
 
-/* ================= MAIN CANVAS ================= */
+/* ---------------- MAIN CANVAS ---------------- */
 
-export default function StickerCanvas() {
-  const elements = useCanvasStore((s) => s.elements);
-  const selectedId = useCanvasStore((s) => s.selectedId);
+export default function StickerCanvas({
+  stageRef,
+}: {
+  stageRef: React.RefObject<any>;
+}) {
+  const elements = useCanvasStore((s) => s.present.elements);
+  const selectedId = useCanvasStore((s) => s.present.selectedId);
 
   const trRef = useRef<any>(null);
 
@@ -130,7 +134,11 @@ export default function StickerCanvas() {
   }, [selectedId]);
 
   return (
-    <Stage width={CANVAS_SIZE} height={CANVAS_SIZE}>
+    <Stage
+      ref={stageRef}
+      width={CANVAS_SIZE}
+      height={CANVAS_SIZE}
+    >
       <Layer>
         {/* CLIPPED STICKER AREA */}
         <Group
@@ -146,7 +154,7 @@ export default function StickerCanvas() {
             ctx.closePath();
           }}
         >
-          {/* Sticker background */}
+          {/* STICKER BACKGROUND */}
           <Circle
             x={CANVAS_SIZE / 2}
             y={CANVAS_SIZE / 2}
@@ -154,7 +162,7 @@ export default function StickerCanvas() {
             fill="#ffffff"
           />
 
-          {/* IMAGE + TEXT RENDERING */}
+          {/* ELEMENTS */}
           {elements.map((el) => {
             if (el.type === "image") {
               return <CanvasImage key={el.id} element={el} />;

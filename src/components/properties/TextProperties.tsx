@@ -3,8 +3,8 @@
 import { useCanvasStore } from "@/store/canvasStore";
 
 export default function TextProperties() {
-  const elements = useCanvasStore((s) => s.elements);
-  const selectedId = useCanvasStore((s) => s.selectedId);
+  const elements = useCanvasStore((s) => s.present.elements);
+  const selectedId = useCanvasStore((s) => s.present.selectedId);
   const updateElement = useCanvasStore((s) => s.updateElement);
 
   const selected = elements.find((el) => el.id === selectedId);
@@ -15,6 +15,7 @@ export default function TextProperties() {
 
   return (
     <div className="space-y-4">
+      {/* TEXT */}
       <div>
         <label className="text-sm font-medium">Text</label>
         <input
@@ -27,6 +28,7 @@ export default function TextProperties() {
         />
       </div>
 
+      {/* FONT SIZE */}
       <div>
         <label className="text-sm font-medium">Font Size</label>
         <input
@@ -35,12 +37,15 @@ export default function TextProperties() {
           max={200}
           value={selected.fontSize}
           onChange={(e) =>
-            updateElement(selected.id, { fontSize: Number(e.target.value) })
+            updateElement(selected.id, {
+              fontSize: Number(e.target.value),
+            })
           }
           className="mt-1 w-full border rounded px-2 py-1 text-sm"
         />
       </div>
 
+      {/* COLOR */}
       <div>
         <label className="text-sm font-medium">Color</label>
         <input
