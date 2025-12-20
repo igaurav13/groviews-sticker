@@ -63,18 +63,17 @@ export default function ImageUpload() {
   /* ---------- CONFIRM ---------- */
 
   const addToCanvas = () => {
-    previewImages.forEach((img) => {
+    previewImages.forEach((preview) => {
       addElement({
-        id: nanoid(),
+        id: `image-${Date.now()}`,
         type: "image",
-        x: 200,
-        y: 200,
+        src: preview.src,
+        x: -100,
+        y: -100,
         rotation: 0,
-        scale: 0.5,
-        src: img.src,
+        scale: 1,
       });
     });
-
     setPreviewImages([]);
     setOpen(false);
   };

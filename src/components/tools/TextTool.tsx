@@ -8,15 +8,15 @@ export default function TextTool() {
 
   const addText = () => {
     addElement({
-      id: uuidv4(),
+      id: `text-${Date.now()}`,
       type: "text",
-      x: 200,
-      y: 200,
+      text: "New Text",
+      x: -50,
+      y: 0,
       rotation: 0,
       scale: 1,
-      text: "Edit me",
-      color: "#000000",
       fontSize: 24,
+      color: "#000000",
     });
   };
 

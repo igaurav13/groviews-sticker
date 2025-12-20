@@ -154,13 +154,14 @@ export default function StickerCanvas() {
             <Circle radius={RADIUS} fill={backgroundColor} />
             {showGrid && <Grid />}
 
-            {elements.map((el) =>
-              el.type === "image" ? (
-                <CanvasImage key={el.id} el={el} />
-              ) : (
-                <CanvasText key={el.id} el={el} />
-              )
-            )}
+            {elements.map((el) => {
+              if (el.type === "image") {
+                return <CanvasImage key={el.id} el={el} />;
+              } else if (el.type === "text") {
+                return <CanvasText key={el.id} el={el} />;
+              }
+              return null;
+            })}
           </Group>
 
           {selectedId && <Transformer ref={trRef} />}
