@@ -10,6 +10,7 @@ import ImageUpload from "@/components/tools/ImageUpload";
 import ZoomControls from "@/components/tools/ZoomControls";
 import LayerControls from "@/components/tools/LayerControls";
 import BackgroundColorPicker from "@/components/tools/BackgroundColorPicker";
+import TemplatePicker from "@/components/tools/TemplatePicker";
 
 export default function DesignPage() {
   const stageRef = useRef<any>(null);
@@ -21,6 +22,7 @@ export default function DesignPage() {
         <h2 className="font-semibold">Tools</h2>
 
         <HistoryControls />
+        <TemplatePicker />
         <ZoomControls />
         <BackgroundColorPicker />
         <LayerControls />

@@ -17,7 +17,8 @@ export type CanvasElement = {
   fontSize?: number;
 };
 
-type CanvasSnapshot = {
+
+export type CanvasSnapshot = {
   elements: CanvasElement[];
   selectedId: string | null;
   scale: number;
@@ -45,12 +46,15 @@ type CanvasState = {
   setScale: (scale: number) => void;
   zoomIn: () => void;
   zoomOut: () => void;
+
+  loadTemplate: (template: CanvasSnapshot) => void;
 };
 
 const STORAGE_KEY = "sticker-draft-v1";
 
-const save = (present: CanvasSnapshot) =>
+const save = (present: CanvasSnapshot) => {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(present));
+};
 
 export const useCanvasStore = create<CanvasState>((set, get) => ({
   past: [],
@@ -62,6 +66,7 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
   },
   future: [],
 
+  /* ---------- ELEMENTS ---------- */
   addElement: (el) => {
     const { past, present } = get();
     const next = {
@@ -91,6 +96,7 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
     set({ present: next });
   },
 
+  /* ---------- LAYERS ---------- */
   bringForward: (id) => {
     const { past, present } = get();
     const idx = present.elements.findIndex((e) => e.id === id);
@@ -117,6 +123,7 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
     set({ past: [...past, present], present: next, future: [] });
   },
 
+  /* ---------- BACKGROUND ---------- */
   setBackgroundColor: (color) => {
     const { past, present } = get();
     const next = { ...present, backgroundColor: color };
@@ -124,9 +131,11 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
     set({ past: [...past, present], present: next, future: [] });
   },
 
+  /* ---------- HISTORY ---------- */
   undo: () => {
     const { past, present, future } = get();
     if (!past.length) return;
+
     const prev = past[past.length - 1];
     save(prev);
     set({
@@ -139,6 +148,7 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
   redo: () => {
     const { past, present, future } = get();
     if (!future.length) return;
+
     const next = future[0];
     save(next);
     set({
@@ -148,12 +158,14 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
     });
   },
 
+  /* ---------- DRAFT ---------- */
   loadDraft: () => {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return;
     set({ past: [], present: JSON.parse(raw), future: [] });
   },
 
+  /* ---------- ZOOM ---------- */
   setScale: (scale) => {
     const { past, present } = get();
     const clamped = Math.min(2.5, Math.max(0.5, scale));
@@ -164,4 +176,15 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
 
   zoomIn: () => get().setScale(get().present.scale + 0.1),
   zoomOut: () => get().setScale(get().present.scale - 0.1),
+
+  /* ---------- TEMPLATES ---------- */
+  loadTemplate: (template) => {
+    const { past, present } = get();
+    save(template);
+    set({
+      past: [...past, present],
+      present: template,
+      future: [],
+    });
+  },
 }));
