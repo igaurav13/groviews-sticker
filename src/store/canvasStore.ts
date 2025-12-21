@@ -4,6 +4,13 @@ import { create } from "zustand";
    TYPES
 ======================= */
 
+export type CropRect = {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+};
+
 export type CanvasElement = {
   id: string;
   type: "image" | "text";
@@ -11,7 +18,12 @@ export type CanvasElement = {
   y: number;
   rotation: number;
   scale: number;
+
+  /* Image only */
   src?: string;
+  crop?: CropRect;
+
+  /* Text only */
   text?: string;
   color?: string;
   fontSize?: number;
@@ -25,15 +37,13 @@ export type CanvasSnapshot = {
 };
 
 type CanvasState = {
-  /* Undoable state */
   past: CanvasSnapshot[];
   present: CanvasSnapshot;
   future: CanvasSnapshot[];
 
-  /* UI-only state */
   showGrid: boolean;
+  isCropping: boolean;
 
-  /* Actions */
   addElement: (el: CanvasElement) => void;
   updateElement: (id: string, attrs: Partial<CanvasElement>) => void;
   setSelectedId: (id: string | null) => void;
@@ -52,13 +62,10 @@ type CanvasState = {
 
   toggleGrid: () => void;
 
-  loadTemplate: (template: CanvasSnapshot) => void;
-};
+  startCrop: () => void;
+  endCrop: () => void;
 
-const STORAGE_KEY = "sticker-draft-v1";
-
-const save = (present: CanvasSnapshot) => {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(present));
+  loadTemplate: (t: CanvasSnapshot) => void;
 };
 
 export const useCanvasStore = create<CanvasState>((set, get) => ({
@@ -72,8 +79,7 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
   future: [],
 
   showGrid: true,
-
-  /* ---------- ELEMENTS ---------- */
+  isCropping: false,
 
   addElement: (el) => {
     const { past, present } = get();
@@ -82,7 +88,6 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
       elements: [...present.elements, el],
       selectedId: el.id,
     };
-    save(next);
     set({ past: [...past, present], present: next, future: [] });
   },
 
@@ -94,60 +99,47 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
         el.id === id ? { ...el, ...attrs } : el
       ),
     };
-    save(next);
     set({ past: [...past, present], present: next, future: [] });
   },
 
-  setSelectedId: (id) => {
-    const next = { ...get().present, selectedId: id };
-    save(next);
-    set({ present: next });
-  },
-
-  /* ---------- LAYERS ---------- */
+  setSelectedId: (id) =>
+    set({ present: { ...get().present, selectedId: id } }),
 
   bringForward: (id) => {
-    const { past, present } = get();
-    const idx = present.elements.findIndex((e) => e.id === id);
-    if (idx === -1 || idx === present.elements.length - 1) return;
-
-    const els = [...present.elements];
-    [els[idx], els[idx + 1]] = [els[idx + 1], els[idx]];
-
-    const next = { ...present, elements: els };
-    save(next);
-    set({ past: [...past, present], present: next, future: [] });
+    const els = [...get().present.elements];
+    const i = els.findIndex((e) => e.id === id);
+    if (i < 0 || i === els.length - 1) return;
+    [els[i], els[i + 1]] = [els[i + 1], els[i]];
+    set({
+      past: [...get().past, get().present],
+      present: { ...get().present, elements: els },
+      future: [],
+    });
   },
 
   sendBackward: (id) => {
-    const { past, present } = get();
-    const idx = present.elements.findIndex((e) => e.id === id);
-    if (idx <= 0) return;
-
-    const els = [...present.elements];
-    [els[idx], els[idx - 1]] = [els[idx - 1], els[idx]];
-
-    const next = { ...present, elements: els };
-    save(next);
-    set({ past: [...past, present], present: next, future: [] });
+    const els = [...get().present.elements];
+    const i = els.findIndex((e) => e.id === id);
+    if (i <= 0) return;
+    [els[i], els[i - 1]] = [els[i - 1], els[i]];
+    set({
+      past: [...get().past, get().present],
+      present: { ...get().present, elements: els },
+      future: [],
+    });
   },
 
-  /* ---------- BACKGROUND ---------- */
-
-  setBackgroundColor: (color) => {
-    const { past, present } = get();
-    const next = { ...present, backgroundColor: color };
-    save(next);
-    set({ past: [...past, present], present: next, future: [] });
-  },
-
-  /* ---------- UNDO / REDO ---------- */
+  setBackgroundColor: (color) =>
+    set({
+      past: [...get().past, get().present],
+      present: { ...get().present, backgroundColor: color },
+      future: [],
+    }),
 
   undo: () => {
     const { past, present, future } = get();
     if (!past.length) return;
     const prev = past[past.length - 1];
-    save(prev);
     set({
       past: past.slice(0, -1),
       present: prev,
@@ -158,40 +150,30 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
   redo: () => {
     const { past, present, future } = get();
     if (!future.length) return;
-    const next = future[0];
-    save(next);
     set({
       past: [...past, present],
-      present: next,
+      present: future[0],
       future: future.slice(1),
     });
   },
 
-  /* ---------- ZOOM ---------- */
-
-  setScale: (scale) => {
-    const { past, present } = get();
-    const clamped = Math.min(2.5, Math.max(0.5, scale));
-    const next = { ...present, scale: clamped };
-    save(next);
-    set({ past: [...past, present], present: next, future: [] });
-  },
+  setScale: (scale) =>
+    set({
+      past: [...get().past, get().present],
+      present: {
+        ...get().present,
+        scale: Math.min(3, Math.max(0.5, scale)),
+      },
+      future: [],
+    }),
 
   zoomIn: () => get().setScale(get().present.scale + 0.1),
   zoomOut: () => get().setScale(get().present.scale - 0.1),
 
-  /* ---------- GRID ---------- */
-
   toggleGrid: () => set((s) => ({ showGrid: !s.showGrid })),
 
-  /* ---------- TEMPLATE ---------- */
+  startCrop: () => set({ isCropping: true }),
+  endCrop: () => set({ isCropping: false }),
 
-  loadTemplate: (template) => {
-    save(template);
-    set({
-      past: [],
-      present: template,
-      future: [],
-    });
-  },
+  loadTemplate: (t) => set({ past: [], present: t, future: [] }),
 }));

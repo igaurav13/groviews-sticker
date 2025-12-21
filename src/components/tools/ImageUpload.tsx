@@ -84,7 +84,7 @@ export default function ImageUpload() {
       <div
         onDrop={onDrop}
         onDragOver={onDragOver}
-        className="border border-dashed rounded p-3 text-sm text-center cursor-pointer hover:bg-gray-50"
+        className="border-2 border-dashed border-[var(--border)] rounded-lg p-4 text-center cursor-pointer hover:border-[var(--primary)] hover:bg-[var(--primary)] hover:bg-opacity-5 transition-all group"
       >
         <label className="cursor-pointer block">
           <input
@@ -94,41 +94,43 @@ export default function ImageUpload() {
             hidden
             onChange={onFileChange}
           />
-          Click or drag images here
+          <div className="text-3xl mb-2 group-hover:scale-110 transition-transform">🖼️</div>
+          <p className="text-sm font-semibold text-[var(--foreground)]">Add Images</p>
+          <p className="text-xs text-[var(--foreground)] opacity-50 mt-1">Drag & drop or click</p>
         </label>
       </div>
 
       {/* PREVIEW MODAL */}
       {open && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="bg-white rounded p-4 w-96">
-            <h3 className="font-semibold mb-2">Preview Images</h3>
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 backdrop-blur-sm">
+          <div className="bg-[var(--background)] rounded-2xl p-6 w-96 shadow-2xl border border-[var(--border)]">
+            <h3 className="text-lg font-semibold mb-4 text-[var(--foreground)]">Preview Images</h3>
 
-            <div className="grid grid-cols-2 gap-2 mb-4">
+            <div className="grid grid-cols-2 gap-3 mb-6 max-h-48 overflow-y-auto rounded-lg p-2 bg-[var(--hover)]">
               {previewImages.map((img, i) => (
                 <img
                   key={i}
                   src={img.src}
                   alt={img.name}
-                  className="border rounded object-contain h-32"
+                  className="border border-[var(--border)] rounded object-contain h-28 bg-[var(--background)]"
                 />
               ))}
             </div>
 
-            <div className="flex justify-end gap-2">
+            <div className="flex justify-end gap-3">
               <button
                 onClick={() => {
                   setPreviewImages([]);
                   setOpen(false);
                 }}
-                className="px-3 py-1 border rounded"
+                className="px-4 py-2 border border-[var(--border)] rounded-lg text-sm font-medium hover:bg-[var(--hover)] transition-colors"
               >
                 Cancel
               </button>
 
               <button
                 onClick={addToCanvas}
-                className="px-3 py-1 bg-blue-600 text-white rounded"
+                className="px-4 py-2 bg-gradient-to-r from-[var(--primary)] to-[var(--primary-light)] hover:shadow-lg text-white rounded-lg text-sm font-semibold transition-all"
               >
                 Add to Canvas
               </button>

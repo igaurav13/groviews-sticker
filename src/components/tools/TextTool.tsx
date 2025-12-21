@@ -23,9 +23,9 @@ export default function TextTool() {
   return (
     <button
       onClick={addText}
-      className="w-full rounded bg-blue-600 text-white py-2 text-sm"
+      className="w-full px-4 py-3 rounded-lg bg-gradient-to-r from-[var(--primary)] to-[var(--primary-light)] hover:shadow-lg text-white text-sm font-semibold transition-all duration-300 transform hover:scale-105 active:scale-95 border border-[var(--primary)]"
     >
-      Add Text
+      + Add Text
     </button>
   );
 }

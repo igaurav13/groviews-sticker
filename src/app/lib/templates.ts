@@ -2,100 +2,223 @@ import { CanvasSnapshot } from "@/store/canvasStore";
 import { nanoid } from "nanoid";
 
 export const templates: CanvasSnapshot[] = [
+  /* ---------- GRADIENT SALE ---------- */
   {
     elements: [
+      {
+        id: nanoid(),
+        type: "text",
+        x: 140,
+        y: 160,
+        rotation: 0,
+        scale: 1,
+        text: "FLASH",
+        color: "#fbbf24",
+        fontSize: 42,
+      },
+      {
+        id: nanoid(),
+        type: "text",
+        x: 135,
+        y: 220,
+        rotation: 0,
+        scale: 1,
+        text: "SALE",
+        color: "#ffffff",
+        fontSize: 48,
+      },
+      {
+        id: nanoid(),
+        type: "text",
+        x: 140,
+        y: 280,
+        rotation: 0,
+        scale: 1,
+        text: "70% OFF",
+        color: "#fde68a",
+        fontSize: 24,
+      },
+    ],
+    selectedId: null,
+    scale: 1,
+    backgroundColor: "#1f2937",
+  },
+
+  /* ---------- NEON VIBRANT ---------- */
+  {
+    elements: [
+      {
+        id: nanoid(),
+        type: "text",
+        x: 110,
+        y: 160,
+        rotation: 0,
+        scale: 1,
+        text: "TRENDING",
+        color: "#00ff88",
+        fontSize: 40,
+      },
+      {
+        id: nanoid(),
+        type: "text",
+        x: 130,
+        y: 220,
+        rotation: 0,
+        scale: 1,
+        text: "THIS WEEK",
+        color: "#ff00ff",
+        fontSize: 28,
+      },
+      {
+        id: nanoid(),
+        type: "text",
+        x: 130,
+        y: 270,
+        rotation: 0,
+        scale: 1,
+        text: "⭐⭐⭐⭐⭐",
+        color: "#00ffff",
+        fontSize: 16,
+      },
+    ],
+    selectedId: null,
+    scale: 1,
+    backgroundColor: "#0a0e27",
+  },
+
+  /* ---------- PREMIUM GOLD ---------- */
+  {
+    elements: [
+      {
+        id: nanoid(),
+        type: "text",
+        x: 140,
+        y: 160,
+        rotation: 0,
+        scale: 1,
+        text: "LUXURY",
+        color: "#fbbf24",
+        fontSize: 40,
+      },
       {
         id: nanoid(),
         type: "text",
         x: 120,
-        y: 180,
+        y: 220,
         rotation: 0,
         scale: 1,
-        text: "SALE",
-        color: "#ff0000",
-        fontSize: 40,
-      },
-    ],
-    selectedId: null,
-    scale: 1,
-    backgroundColor: "#ffffff",
-  },
-
-  {
-    elements: [
-      {
-        id: nanoid(),
-        type: "text",
-        x: 80,
-        y: 190,
-        rotation: 0,
-        scale: 1,
-        text: "NEW ARRIVAL",
-        color: "#111827",
-        fontSize: 28,
-      },
-    ],
-    selectedId: null,
-    scale: 1,
-    backgroundColor: "#fde68a",
-  },
-
-  {
-    elements: [
-      {
-        id: nanoid(),
-        type: "text",
-        x: 90,
-        y: 190,
-        rotation: 0,
-        scale: 1,
-        text: "HANDMADE",
-        color: "#065f46",
+        text: "COLLECTION",
+        color: "#ffffff",
         fontSize: 32,
       },
+      {
+        id: nanoid(),
+        type: "text",
+        x: 140,
+        y: 270,
+        rotation: 0,
+        scale: 1,
+        text: "👑 PREMIUM",
+        color: "#fef08a",
+        fontSize: 20,
+      },
     ],
     selectedId: null,
     scale: 1,
-    backgroundColor: "#d1fae5",
+    backgroundColor: "#1a1a1a",
   },
 
-  /* ---------- NEW TEMPLATE 4 ---------- */
+  /* ---------- COOL BLUE GRADIENT ---------- */
   {
     elements: [
       {
         id: nanoid(),
         type: "text",
-        x: 95,
-        y: 185,
+        x: 130,
+        y: 165,
         rotation: 0,
         scale: 1,
-        text: "50% OFF",
+        text: "LIMITED",
+        color: "#58a6ff",
+        fontSize: 40,
+      },
+      {
+        id: nanoid(),
+        type: "text",
+        x: 145,
+        y: 225,
+        rotation: 0,
+        scale: 1,
+        text: "EDITION",
         color: "#ffffff",
         fontSize: 36,
       },
+      {
+        id: nanoid(),
+        type: "text",
+        x: 135,
+        y: 280,
+        rotation: 0,
+        scale: 1,
+        text: "ONLY 100 LEFT",
+        color: "#79c0ff",
+        fontSize: 18,
+      },
     ],
     selectedId: null,
     scale: 1,
-    backgroundColor: "#dc2626", // red-600
+    backgroundColor: "#0d1b2a",
   },
 
-  /* ---------- NEW TEMPLATE 5 ---------- */
+  /* ---------- VIBRANT SUNSET ---------- */
   {
     elements: [
       {
         id: nanoid(),
         type: "text",
-        x: 70,
-        y: 185,
+        x: 115,
+        y: 160,
         rotation: 0,
         scale: 1,
-        text: "ORGANIC • ECO",
-        color: "#064e3b",
-        fontSize: 26,
+        text: "EXCLUSIVE",
+        color: "#fff5e6",
+        fontSize: 38,
+      },
+      {
+        id: nanoid(),
+        type: "text",
+        x: 155,
+        y: 220,
+        rotation: 0,
+        scale: 1,
+        text: "DROPS",
+        color: "#fca5a5",
+        fontSize: 40,
+      },
+      {
+        id: nanoid(),
+        type: "text",
+        x: 140,
+        y: 275,
+        rotation: 0,
+        scale: 1,
+        text: "🔥 HOT ALERT",
+        color: "#ff6b6b",
+        fontSize: 20,
       },
     ],
     selectedId: null,
     scale: 1,
-    backgroundColor: "#ecfdf5", // green-50
+    backgroundColor: "#2d1b69",
   },
 ];
+
+export const templateNames = [
+  "Flash Sale",
+  "Trending Now",
+  "Luxury",
+  "Limited Edition",
+  "Exclusive Drops",
+];
+
+export const templateEmojis = ["🎉", "✨", "👑", "❄️", "🔥"];

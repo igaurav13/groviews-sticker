@@ -10,15 +10,19 @@ export default function HistoryControls() {
     <div className="flex gap-2">
       <button
         onClick={undo}
-        className="flex-1 rounded border px-2 py-1 text-sm"
+        className="flex-1 icon-btn tooltip transition-all duration-300"
+        data-tooltip="Undo (Ctrl+Z)"
+        title="Undo"
       >
-        Undo
+        ↶
       </button>
       <button
         onClick={redo}
-        className="flex-1 rounded border px-2 py-1 text-sm"
+        className="flex-1 icon-btn tooltip transition-all duration-300"
+        data-tooltip="Redo (Ctrl+Y)"
+        title="Redo"
       >
-        Redo
+        ↷
       </button>
     </div>
   );

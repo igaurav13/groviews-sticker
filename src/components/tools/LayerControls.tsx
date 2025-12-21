@@ -9,28 +9,28 @@ export default function LayerControls() {
 
   if (!selectedId) {
     return (
-      <p className="text-sm text-gray-500">
-        Select an element to manage layers
+      <p className="text-xs text-[var(--foreground)] opacity-50 text-center py-3">
+        Select to layer
       </p>
     );
   }
 
   return (
-    <div className="space-y-2">
-      <h3 className="text-sm font-medium">Layers</h3>
-
+    <div className="flex gap-2">
       <button
         onClick={() => bringForward(selectedId)}
-        className="w-full px-3 py-1 border rounded text-sm"
+        className="flex-1 px-3 py-2 rounded-lg bg-[var(--background)] hover:bg-[var(--primary)] hover:text-white text-xs font-bold transition-all duration-300 transform hover:scale-105 border border-[var(--border)] hover:border-[var(--primary)]"
+        title="Bring Forward"
       >
-        Bring Forward
+        ↑
       </button>
 
       <button
         onClick={() => sendBackward(selectedId)}
-        className="w-full px-3 py-1 border rounded text-sm"
+        className="flex-1 px-3 py-2 rounded-lg bg-[var(--background)] hover:bg-[var(--primary)] hover:text-white text-xs font-bold transition-all duration-300 transform hover:scale-105 border border-[var(--border)] hover:border-[var(--primary)]"
+        title="Send Backward"
       >
-        Send Backward
+        ↓
       </button>
     </div>
   );

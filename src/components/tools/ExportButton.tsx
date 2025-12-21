@@ -23,9 +23,9 @@ export default function ExportButton({
   return (
     <button
       onClick={handleExport}
-      className="rounded border px-2 py-1 text-sm"
+      className="w-full px-4 py-3 rounded-lg bg-gradient-to-r from-[var(--primary)] to-[var(--primary-light)] hover:shadow-xl text-white text-sm font-semibold transition-all duration-300 transform hover:scale-105 active:scale-95 border border-[var(--primary)] flex items-center justify-center gap-2"
     >
-      Export PNG
+      <span>⬇</span> Download PNG
     </button>
   );
 }
