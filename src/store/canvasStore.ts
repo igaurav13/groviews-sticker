@@ -34,39 +34,59 @@ export type CanvasSnapshot = {
   selectedId: string | null;
   scale: number;
   backgroundColor: string;
+
+  /* Export / Summary */
+  preview?: string; // ✅ ADDED (safe)
 };
 
 type CanvasState = {
+  /* History */
   past: CanvasSnapshot[];
   present: CanvasSnapshot;
   future: CanvasSnapshot[];
 
+  /* UI flags */
   showGrid: boolean;
   isCropping: boolean;
 
+  /* Element actions */
   addElement: (el: CanvasElement) => void;
   updateElement: (id: string, attrs: Partial<CanvasElement>) => void;
   setSelectedId: (id: string | null) => void;
 
+  /* Layer actions */
   bringForward: (id: string) => void;
   sendBackward: (id: string) => void;
 
+  /* Canvas actions */
   setBackgroundColor: (color: string) => void;
 
+  /* Undo / Redo */
   undo: () => void;
   redo: () => void;
 
+  /* Zoom */
   setScale: (scale: number) => void;
   zoomIn: () => void;
   zoomOut: () => void;
 
+  /* Grid */
   toggleGrid: () => void;
 
+  /* Crop */
   startCrop: () => void;
   endCrop: () => void;
 
+  /* Templates */
   loadTemplate: (t: CanvasSnapshot) => void;
+
+  /* Export */
+  setPreview: (dataUrl: string) => void; // ✅ ADDED
 };
+
+/* =======================
+   STORE
+======================= */
 
 export const useCanvasStore = create<CanvasState>((set, get) => ({
   past: [],
@@ -80,6 +100,8 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
 
   showGrid: true,
   isCropping: false,
+
+  /* ---------- ELEMENTS ---------- */
 
   addElement: (el) => {
     const { past, present } = get();
@@ -103,13 +125,22 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
   },
 
   setSelectedId: (id) =>
-    set({ present: { ...get().present, selectedId: id } }),
+    set({
+      present: {
+        ...get().present,
+        selectedId: id,
+      },
+    }),
+
+  /* ---------- LAYERS ---------- */
 
   bringForward: (id) => {
     const els = [...get().present.elements];
     const i = els.findIndex((e) => e.id === id);
     if (i < 0 || i === els.length - 1) return;
+
     [els[i], els[i + 1]] = [els[i + 1], els[i]];
+
     set({
       past: [...get().past, get().present],
       present: { ...get().present, elements: els },
@@ -121,7 +152,9 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
     const els = [...get().present.elements];
     const i = els.findIndex((e) => e.id === id);
     if (i <= 0) return;
+
     [els[i], els[i - 1]] = [els[i - 1], els[i]];
+
     set({
       past: [...get().past, get().present],
       present: { ...get().present, elements: els },
@@ -129,12 +162,16 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
     });
   },
 
+  /* ---------- BACKGROUND ---------- */
+
   setBackgroundColor: (color) =>
     set({
       past: [...get().past, get().present],
       present: { ...get().present, backgroundColor: color },
       future: [],
     }),
+
+  /* ---------- UNDO / REDO ---------- */
 
   undo: () => {
     const { past, present, future } = get();
@@ -157,6 +194,8 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
     });
   },
 
+  /* ---------- ZOOM ---------- */
+
   setScale: (scale) =>
     set({
       past: [...get().past, get().present],
@@ -170,10 +209,31 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
   zoomIn: () => get().setScale(get().present.scale + 0.1),
   zoomOut: () => get().setScale(get().present.scale - 0.1),
 
+  /* ---------- GRID ---------- */
+
   toggleGrid: () => set((s) => ({ showGrid: !s.showGrid })),
+
+  /* ---------- CROP ---------- */
 
   startCrop: () => set({ isCropping: true }),
   endCrop: () => set({ isCropping: false }),
 
-  loadTemplate: (t) => set({ past: [], present: t, future: [] }),
+  /* ---------- TEMPLATE ---------- */
+
+  loadTemplate: (t) =>
+    set({
+      past: [],
+      present: t,
+      future: [],
+    }),
+
+  /* ---------- EXPORT ---------- */
+
+  setPreview: (dataUrl) =>
+    set({
+      present: {
+        ...get().present,
+        preview: dataUrl,
+      },
+    }),
 }));
