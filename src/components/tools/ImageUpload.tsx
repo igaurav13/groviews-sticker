@@ -2,7 +2,7 @@
 
 import { useState, DragEvent } from "react";
 import { nanoid } from "nanoid";
-import { useCanvasStore } from "@/store/canvasStore";
+import { useCanvasStore } from "@/app/store/canvasStore";
 
 type PreviewImage = {
   src: string;

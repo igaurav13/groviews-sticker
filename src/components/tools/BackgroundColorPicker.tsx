@@ -1,6 +1,6 @@
 "use client";
 
-import { useCanvasStore } from "@/store/canvasStore";
+import { useCanvasStore } from "@/app/store/canvasStore";
 
 export default function BackgroundColorPicker() {
   const color = useCanvasStore((s) => s.present.backgroundColor);

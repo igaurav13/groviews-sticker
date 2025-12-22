@@ -1,6 +1,6 @@
 "use client";
 
-import { useCanvasStore } from "@/store/canvasStore";
+import { useCanvasStore } from "@/app/store/canvasStore";
 import { useState } from "react";
 
 export default function SummaryPage() {

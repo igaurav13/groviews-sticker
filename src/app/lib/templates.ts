@@ -1,4 +1,4 @@
-import { CanvasSnapshot } from "@/store/canvasStore";
+import { CanvasSnapshot } from "@/app/store/canvasStore";
 import { nanoid } from "nanoid";
 
 export const templates: CanvasSnapshot[] = [

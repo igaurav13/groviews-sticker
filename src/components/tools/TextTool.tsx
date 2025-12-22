@@ -1,7 +1,7 @@
 "use client";
 
 import { v4 as uuidv4 } from "uuid";
-import { useCanvasStore } from "@/store/canvasStore";
+import { useCanvasStore } from "@/app/store/canvasStore";
 
 export default function TextTool() {
   const addElement = useCanvasStore((s) => s.addElement);

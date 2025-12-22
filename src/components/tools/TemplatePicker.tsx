@@ -1,7 +1,7 @@
 "use client";
 
 import { templates, templateNames, templateEmojis } from "@/app/lib/templates";
-import { useCanvasStore } from "@/store/canvasStore";
+import { useCanvasStore } from "@/app/store/canvasStore";
 import GridToggle from "./GridToggle";
 
 export default function TemplatePicker() {

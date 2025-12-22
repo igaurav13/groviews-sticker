@@ -10,7 +10,7 @@ import {
   Image as KonvaImage,
   Text as KonvaText,
 } from "react-konva";
-import { useCanvasStore } from "@/store/canvasStore";
+import { useCanvasStore } from "@/app/store/canvasStore";
 import useImage from "use-image";
 import { useEffect, useRef } from "react";
 
@@ -117,12 +117,16 @@ function CanvasText({ el }: any) {
    MAIN CANVAS
 ======================= */
 export default function StickerCanvas() {
+  
   const { elements, selectedId, scale, backgroundColor } =
     useCanvasStore((s) => s.present);
 
   const showGrid = useCanvasStore((s) => s.showGrid);
+  const setPreview = useCanvasStore((s: any) => s.setPreview); // <-- safe optional
   const trRef = useRef<any>(null);
+  const stageRef = useRef<any>(null);
 
+  /* ---------- Transformer ---------- */
   useEffect(() => {
     if (!selectedId || !trRef.current) return;
     const stage = trRef.current.getStage();
@@ -133,8 +137,23 @@ export default function StickerCanvas() {
     }
   }, [selectedId]);
 
+  /* ---------- EXPORT PREVIEW (PNG) ---------- */
+  useEffect(() => {
+    if (!stageRef.current || !setPreview) return;
+
+    const timeout = setTimeout(() => {
+      const uri = stageRef.current.toDataURL({
+        pixelRatio: 2,
+      });
+      setPreview(uri);
+    }, 300);
+
+    return () => clearTimeout(timeout);
+  }, [elements, backgroundColor, scale, showGrid, setPreview]);
+
   return (
     <Stage
+      ref={stageRef}
       width={BASE_SIZE * scale}
       height={BASE_SIZE * scale}
       scaleX={scale}
@@ -154,14 +173,13 @@ export default function StickerCanvas() {
             <Circle radius={RADIUS} fill={backgroundColor} />
             {showGrid && <Grid />}
 
-            {elements.map((el) => {
-              if (el.type === "image") {
-                return <CanvasImage key={el.id} el={el} />;
-              } else if (el.type === "text") {
-                return <CanvasText key={el.id} el={el} />;
-              }
-              return null;
-            })}
+            {elements.map((el) =>
+              el.type === "image" ? (
+                <CanvasImage key={el.id} el={el} />
+              ) : (
+                <CanvasText key={el.id} el={el} />
+              )
+            )}
           </Group>
 
           {selectedId && <Transformer ref={trRef} />}
