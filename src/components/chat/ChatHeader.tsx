@@ -1,16 +1,26 @@
-type ChatHeaderProps = {
-  onClose: () => void;
-};
+"use client";
 
-export default function ChatHeader({ onClose }: ChatHeaderProps) {
+import { useChatStore } from "@/app/store/chatStore";
+
+export default function ChatHeader() {
+  const closeChat = useChatStore((s) => s.closeChat);
+
   return (
-    <div className="flex items-center justify-between p-4 border-b">
-      <h3 className="font-semibold">Customer Support</h3>
+    <div
+      className="
+        flex items-center justify-between
+        px-4 py-3
+        border-b border-(--border)
+      "
+    >
+      <span className="text-sm font-medium text-foreground">
+        Customer Support
+      </span>
 
       <button
-        onClick={onClose}
+        onClick={closeChat}
         aria-label="Close chat"
-        className="text-gray-500 hover:text-black"
+        className="icon-btn"
       >
         ✕
       </button>

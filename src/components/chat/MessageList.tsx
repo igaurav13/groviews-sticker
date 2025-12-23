@@ -1,13 +1,11 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import {
   collection,
   onSnapshot,
   orderBy,
   query,
-  updateDoc,
-  doc,
 } from "firebase/firestore";
 
 import { db } from "@/app/lib/firebase";
@@ -18,8 +16,10 @@ export default function MessageList() {
     sessionId,
     messages,
     addMessage,
-    updateMessageStatus,
+    updateMessage,
   } = useChatStore();
+
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!sessionId) return;
@@ -30,49 +30,64 @@ export default function MessageList() {
     );
 
     const unsub = onSnapshot(q, (snapshot) => {
-      snapshot.docChanges().forEach((change) => {
-        if (change.type === "added") {
-          const data = change.doc.data();
+      snapshot.forEach((doc) => {
+        const data = doc.data();
 
+        // 1️⃣ Try to match optimistic message
+        if (data.clientId) {
+          const optimistic = messages.find(
+            (m) => m.clientId === data.clientId
+          );
+
+          if (optimistic) {
+            updateMessage(data.clientId, {
+              id: doc.id,
+              status: data.status,
+            });
+            return;
+          }
+        }
+
+        // 2️⃣ Add only NON-user or admin messages
+        const exists = messages.some((m) => m.id === doc.id);
+        if (!exists && data.sender !== "user") {
           addMessage({
-            id: change.doc.id,
+            id: doc.id,
             text: data.text,
             sender: data.sender,
             status: data.status,
             createdAt: data.createdAt,
           });
-
-          // Mark admin messages as read
-          if (data.sender === "admin" && data.status !== "read") {
-            updateDoc(
-              doc(db, "chats", sessionId, "messages", change.doc.id),
-              { status: "read" }
-            );
-
-            updateMessageStatus(change.doc.id, "read");
-          }
         }
       });
     });
 
     return () => unsub();
-  }, [sessionId, addMessage, updateMessageStatus]);
+  }, [sessionId, messages, addMessage, updateMessage]);
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
+  }, [messages]);
 
   return (
-    <div className="flex-1 overflow-y-auto p-3 space-y-2">
+    <div
+      ref={scrollRef}
+      className="flex-1 overflow-y-auto px-3 py-4 space-y-2"
+    >
       {messages.map((m) => (
         <div
           key={m.id}
-          className={`max-w-[75%] p-2 rounded text-sm ${
+          className={`max-w-[80%] px-3 py-2 rounded-lg text-sm ${
             m.sender === "user"
-              ? "ml-auto bg-blue-600 text-white"
-              : "mr-auto bg-gray-200"
+              ? "ml-auto bg-(--primary) text-white"
+              : "mr-auto bg-(--hover) text-foreground border border-(--border)"
           }`}
         >
           {m.text}
-          <div className="text-[10px] opacity-70 mt-1">
-            {new Date(m.createdAt).toLocaleTimeString()}
-            {m.sender === "user" && ` • ${m.status}`}
+          <div className="mt-1 text-[10px] opacity-70">
+            {new Date(m.createdAt).toLocaleTimeString()} •{" "}
+            {m.status}
           </div>
         </div>
       ))}
