@@ -2,6 +2,7 @@ import { InvoiceData } from "@/types/types";
 
 export const sampleInvoice: InvoiceData = {
   invoiceNumber: "INV-TEST-001",
+  // @ts-ignore
   date: "2025-01-01",
   dueDate: "2025-01-10",
 

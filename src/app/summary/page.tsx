@@ -2,6 +2,9 @@
 
 import { useCanvasStore } from "@/app/store/canvasStore";
 import { useState } from "react";
+import { InvoiceData } from "@/types/types";
+import { sampleInvoice } from "./sampleInvoice";
+import InvoicePreview from "@/components/invoice/InvoicePreview";
 
 export default function SummaryPage() {
   const { elements, backgroundColor } = useCanvasStore(
@@ -11,6 +14,8 @@ export default function SummaryPage() {
   const [quantity, setQuantity] = useState(1);
   const [size, setSize] = useState<"S" | "M" | "L">("M");
   const [error, setError] = useState("");
+  const [invoice, setInvoice] = useState<InvoiceData | null>(null);
+
 
   const handleAddToCart = () => {
     if (quantity < 1) {
@@ -128,6 +133,45 @@ export default function SummaryPage() {
         >
           Add to Cart
         </button>
+
+        {/* -----------------------------
+   INVOICE TESTING (NON-BREAKING)
+------------------------------ */}
+<div className="mt-16 border-t pt-10 border-[var(--border)]">
+  <h2 className="text-xl font-semibold text-white mb-2">
+    Invoice Testing (Demo)
+  </h2>
+  <p className="text-sm text-gray-400 mb-4">
+    This section is for testing invoice generation & PDF export.
+  </p>
+
+  <button
+    onClick={() => setInvoice(sampleInvoice)}
+    className="px-6 py-2 rounded mb-6"
+    style={{ background: "var(--primary)", color: "#fff" }}
+  >
+    Load Sample Invoice
+  </button>
+
+  {invoice && (
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* Preview */}
+      <InvoicePreview invoice={invoice} />
+
+      {/* Debug / Reviewer View */}
+      <div
+        className="rounded-lg p-4 border text-xs overflow-auto max-h-[420px]"
+        style={{
+          background: "var(--card-bg)",
+          borderColor: "var(--border)",
+        }}
+      >
+        <pre>{JSON.stringify(invoice, null, 2)}</pre>
+      </div>
+    </div>
+  )}
+</div>
+
       </div>
     </div>
   );
