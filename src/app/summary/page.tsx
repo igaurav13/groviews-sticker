@@ -82,7 +82,7 @@ export default function SummaryPage() {
                 className={`px-5 py-2 rounded border text-sm transition ${
                   size === s
                     ? "bg-blue-600 text-white border-blue-600"
-                    : "bg-transparent text-gray-300 border-[var(--border)] hover:bg-[var(--hover)]"
+                    : "bg-transparent text-gray-300 border-(--border) hover:bg-(--hover)"
                 }`}
               >
                 {s}
