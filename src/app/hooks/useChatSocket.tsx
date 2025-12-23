@@ -3,7 +3,7 @@
 import { io, Socket } from "socket.io-client";
 import { useEffect, useRef } from "react";
 import { useChatStore } from "@/app/store/chatStore";
-import { Message, TypingPayload } from "@/app/types/chat";
+import { Message, TypingPayload } from "@/types/chat";
 
 const SOCKET_URL = "http://localhost:3001";
 

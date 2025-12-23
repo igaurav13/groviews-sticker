@@ -1,6 +1,6 @@
 "use client";
 
-import { Message } from "@/app/types/chat";
+import { Message } from "@/types/chat";
 
 export default function MessageItem({ msg }: { msg: Message }) {
   return (

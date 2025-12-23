@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import type { ChatMessage, ChatUser } from "@/app/types/chat";
+import type { ChatMessage, ChatUser } from "@/types/chat";
 
 type ChatState = {
   // UI
