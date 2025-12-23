@@ -33,7 +33,7 @@ export default function MessageList() {
       snapshot.forEach((doc) => {
         const data = doc.data();
 
-        // 1️⃣ Try to match optimistic message
+
         if (data.clientId) {
           const optimistic = messages.find(
             (m) => m.clientId === data.clientId
@@ -48,7 +48,6 @@ export default function MessageList() {
           }
         }
 
-        // 2️⃣ Add only NON-user or admin messages
         const exists = messages.some((m) => m.id === doc.id);
         if (!exists && data.sender !== "user") {
           addMessage({

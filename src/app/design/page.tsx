@@ -17,11 +17,11 @@ export default function DesignPage() {
   const stageRef = useRef<any>(null);
 
   return (
-    <div className="h-screen flex bg-[var(--background)] overflow-hidden">
+    <div className="h-screen flex bg-background overflow-hidden">
       {/* Left Sidebar - All Tools */}
-      <div className="w-80 border-r border-[var(--border)] bg-[var(--card-bg)] flex flex-col shadow-lg overflow-hidden">
+      <div className="w-80 border-r border-(--border) bg-(--card-bg) flex flex-col shadow-lg overflow-hidden">
         {/* Header */}
-        <div className="px-6 py-6 border-b border-[var(--border)] bg-gradient-to-r from-[var(--primary)] via-[#0d47a1] to-[var(--primary-light)] text-white">
+        <div className="px-6 py-6 border-b border-(--border) bg-linear-to-r from-(--primary) via-[#0d47a1] to-(--primary-light) text-white">
           <h1 className="text-2xl font-bold tracking-tight">✨ Design</h1>
           <p className="text-xs opacity-80 mt-1.5 font-medium">Create amazing stickers</p>
         </div>
@@ -30,18 +30,18 @@ export default function DesignPage() {
         <div className="flex-1 overflow-y-auto p-5 space-y-6 scroll-smooth">
           {/* History Section */}
           <div className="space-y-3">
-            <h3 className="text-xs font-bold uppercase tracking-widest text-[var(--foreground)] opacity-70 px-1">History</h3>
-            <div className="bg-[var(--background)] p-3 rounded-lg border border-[var(--border)] hover:border-[var(--primary)] transition-colors">
+            <h3 className="text-xs font-bold uppercase tracking-widest text-foreground opacity-70 px-1">History</h3>
+            <div className="bg-background p-3 rounded-lg border border-(--border) hover:border-(--primary) transition-colors">
               <HistoryControls />
             </div>
           </div>
 
           {/* Divider */}
-          <div className="h-px bg-gradient-to-r from-transparent via-[var(--border)] to-transparent"></div>
+          <div className="h-px bg-linear-to-r from-transparent via-(--border) to-transparent"></div>
 
           {/* Templates Section */}
           <div className="space-y-3">
-            <h3 className="text-xs font-bold uppercase tracking-widest text-[var(--foreground)] opacity-70 px-1">Templates</h3>
+            <h3 className="text-xs font-bold uppercase tracking-widest text-foreground opacity-70 px-1">Templates</h3>
             <div className="bg-[var(--background)] p-3 rounded-lg border border-[var(--border)] hover:border-[var(--primary)] transition-colors">
               <TemplatePicker />
             </div>
