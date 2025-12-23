@@ -1,11 +1,14 @@
 "use client";
 
-import { InvoiceData } from "../../types/types";
+import { InvoiceData } from "@/types/types";
 import {
   calculateSubtotal,
   calculateTax,
   calculateTotal,
 } from "./utils/calculations";
+
+import { PDFDownloadLink } from "@react-pdf/renderer";
+import InvoicePDF from "./pdf/InvoicePDF";
 
 type Props = {
   invoice: InvoiceData;
@@ -16,20 +19,38 @@ export default function InvoicePreview({ invoice }: Props) {
   const tax = calculateTax(subtotal, invoice.taxRate);
   const total = calculateTotal(subtotal, tax);
 
+  const handlePrint = () => {
+    window.print();
+  };
+
   return (
     <div className="bg-[var(--card-bg)] border border-[var(--border)] rounded-xl p-6 space-y-6">
       {/* Header */}
       <div className="flex justify-between items-start">
         <div>
-          <h2 className="text-xl font-semibold">Invoice</h2>
+          <h2 className="text-xl font-semibold">Invoice Preview</h2>
           <p className="text-sm text-gray-400">
             #{invoice.invoiceNumber}
           </p>
         </div>
 
-        <div className="text-sm text-gray-400 text-right">
-          <p>Date: {invoice.invoiceDate}</p>
-          {invoice.dueDate && <p>Due: {invoice.dueDate}</p>}
+        <div className="flex gap-2">
+          {/* PDF Download */}
+          <PDFDownloadLink
+            document={<InvoicePDF invoice={invoice} />}
+            fileName={`${invoice.invoiceNumber}.pdf`}
+            className="px-3 py-1.5 rounded-md bg-[var(--primary)] text-white text-sm"
+          >
+            Download PDF
+          </PDFDownloadLink>
+
+          {/* Print */}
+          <button
+            onClick={handlePrint}
+            className="px-3 py-1.5 rounded-md border border-[var(--border)] text-sm hover:bg-[var(--hover)]"
+          >
+            Print
+          </button>
         </div>
       </div>
 
@@ -47,7 +68,7 @@ export default function InvoicePreview({ invoice }: Props) {
         </p>
       </div>
 
-      {/* Items Table */}
+      {/* Items */}
       <div className="border-t border-[var(--border)] pt-4">
         <div className="grid grid-cols-12 text-sm text-gray-400 mb-2">
           <span className="col-span-6">Description</span>

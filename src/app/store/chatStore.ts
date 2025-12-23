@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import type { ChatMessage, ChatUser } from "@/types/chat";
+import type { User, Message } from "@/types/chat";
 
 type ChatState = {
   // UI
@@ -7,42 +7,26 @@ type ChatState = {
 
   // Session
   sessionId: string | null;
-  user: ChatUser | null;
+  user: User | null;
 
-  // Messages
-  messages: ChatMessage[];
+  // Chat
+  messages: Message[];
   unreadCount: number;
   isTyping: boolean;
 
-  // UI Actions
+  // Actions
   openChat: () => void;
   closeChat: () => void;
 
-  // Session actions
-  setUser: (user: ChatUser) => void;
+  setUser: (user: User) => void;
+  addMessage: (message: Message) => void;
+  updateMessageStatus: (id: string, status: Message["status"]) => void;
 
-  // Message actions
-  addMessage: (message: ChatMessage) => void;
-  updateMessage: (
-    tempId: string,
-    data: Partial<ChatMessage>
-  ) => void;
-  updateMessageStatus: (
-    id: string,
-    status: ChatMessage["status"]
-  ) => void;
-
-  // Typing
   setTyping: (typing: boolean) => void;
-
-  // Cleanup
   clearMessages: () => void;
 };
 
 export const useChatStore = create<ChatState>((set) => ({
-  // ----------------
-  // INITIAL STATE
-  // ----------------
   isOpen: false,
   sessionId: null,
   user: null,
@@ -51,44 +35,27 @@ export const useChatStore = create<ChatState>((set) => ({
   unreadCount: 0,
   isTyping: false,
 
-  // ----------------
-  // UI
-  // ----------------
-  openChat: () =>
-    set(() => ({
-      isOpen: true,
-      unreadCount: 0,
-    })),
+  openChat: () => set({ isOpen: true, unreadCount: 0 }),
+  closeChat: () => set({ isOpen: false }),
 
-  closeChat: () =>
-    set(() => ({
-      isOpen: false,
-    })),
-
-  // ----------------
-  // SESSION
-  // ----------------
   setUser: (user) =>
-    set(() => ({
+    set({
       user,
-      sessionId: user.id, // session tied to user
-    })),
+      sessionId: user.id, // sessionId = user.id
+    }),
 
-  // ----------------
-  // MESSAGES
-  // ----------------
   addMessage: (message) =>
     set((state) => ({
       messages: [...state.messages, message],
       unreadCount: state.isOpen ? 0 : state.unreadCount + 1,
     })),
-
-  updateMessage: (tempId, data) =>
-    set((state) => ({
-      messages: state.messages.map((m) =>
-        m.id === tempId ? { ...m, ...data } : m
-      ),
-    })),
+  updateMessage: (tempId: string, data: Partial<ChatMessage>) => {
+  set((state) => ({
+    messages: state.messages.map((m) =>
+      m.id === tempId ? { ...m, ...data } : m
+    ),
+  }));
+},
 
   updateMessageStatus: (id, status) =>
     set((state) => ({
@@ -97,20 +64,7 @@ export const useChatStore = create<ChatState>((set) => ({
       ),
     })),
 
-  // ----------------
-  // TYPING
-  // ----------------
-  setTyping: (typing) =>
-    set(() => ({
-      isTyping: typing,
-    })),
+  setTyping: (typing) => set({ isTyping: typing }),
 
-  // ----------------
-  // RESET
-  // ----------------
-  clearMessages: () =>
-    set(() => ({
-      messages: [],
-      unreadCount: 0,
-    })),
+  clearMessages: () => set({ messages: [], unreadCount: 0 }),
 }));

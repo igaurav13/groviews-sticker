@@ -1,14 +1,15 @@
 "use client";
 
-import { io, Socket } from "socket.io-client";
 import { useEffect, useRef } from "react";
+import { io, Socket } from "socket.io-client";
 import { useChatStore } from "@/app/store/chatStore";
-import { Message, TypingPayload } from "@/types/chat";
+import type { Message, TypingPayload } from "@/types/chat";
 
 const SOCKET_URL = "http://localhost:3001";
 
 export const useChatSocket = () => {
   const socketRef = useRef<Socket | null>(null);
+
   const addMessage = useChatStore((s) => s.addMessage);
   const setTyping = useChatStore((s) => s.setTyping);
 
