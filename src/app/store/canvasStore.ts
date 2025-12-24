@@ -1,8 +1,5 @@
 import { create } from "zustand";
 
-/* =======================
-   TYPES
-======================= */
 
 export type CropRect = {
   x: number;
@@ -36,7 +33,7 @@ export type CanvasSnapshot = {
   backgroundColor: string;
 
   /* Export / Summary */
-  preview?: string; // ✅ ADDED (safe)
+  preview?: string; 
 };
 
 type CanvasState = {
@@ -81,7 +78,7 @@ type CanvasState = {
   loadTemplate: (t: CanvasSnapshot) => void;
 
   /* Export */
-  setPreview: (dataUrl: string) => void; // ✅ ADDED
+  setPreview: (dataUrl: string) => void;
 };
 
 /* =======================
