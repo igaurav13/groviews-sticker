@@ -102,7 +102,7 @@ A floating, real-time chat widget designed like a production support tool.
 
 ### 1️⃣ Clone the repository
 ```
-git clone 
+git clone https://github.com/igaurav13/groviews-sticker
 cd groviews-sticker
 npm install
 npm run dev
