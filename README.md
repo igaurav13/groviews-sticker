@@ -3,7 +3,7 @@
 
 ## 🧩 Project Overview
 
-This repository contains the implementation for the **Groviews React Developer Technical Assignment**, covering:
+This repository contains the implementation for the **Groviews Technical Assignment**, covering:
 
 1. **Canvas-based Sticker Designer**
 2. **Real-time Customer Care Chat Widget**
